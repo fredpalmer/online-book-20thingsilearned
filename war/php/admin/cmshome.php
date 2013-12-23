@@ -24,21 +24,18 @@ import com.fi.twentythings.Locale;
 
 require_once('../includes/auth.php');
 
-
 /**
  * get the locales fromn the datastore and add them to a select
  */
- 
 function locale_codes_dropdown() {
 
 	$obj_service = new Java('com.googlecode.objectify.ObjectifyService');
-	$ofy = $obj_service->begin();
 	$localeclass = java_class('com.fi.twentythings.Locale');
 	ObjectifyService::register($localeclass);	
 	
 	$localeField = 'locale';
 	
-	$locales = $ofy->query($localeclass)->list();
+	$locales = $obj_service->ofy()->load()->type($localeclass)->list();
 	
 	foreach( $locales as $locale ) {
         echo '<p><a href="/cmseditlocale?locale='.$locale->getId().'">'.$locale->getId().'</a></p>'."\n";                

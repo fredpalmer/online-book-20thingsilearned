@@ -66,7 +66,7 @@ function remove_page_link() {
 
 function get_pages() {
 	
-	global $ofy, $pageclass;
+	global $pageclass;
 	
 	$pagekey = $_REQUEST['article'];	
 	$localekey = $_REQUEST['locale'];
@@ -83,7 +83,7 @@ function get_pages() {
 	}*/	
 
 	
-	$pages = $ofy->query($pageclass)->filter('locale', $localekey)->filter('stub', $pagekey)->list();
+	$pages = ofy()->load()->type($pageclass)->filter('locale', $localekey)->filter('stub', $pagekey)->list();
 	
 	echo '<ol>';	
 	
@@ -97,7 +97,7 @@ function get_pages() {
 
 
 function get_page_properties() {	
-	global $ofy, $pageclass;
+	global $pageclass;
 
 
 	//if we detect a form submit and are saving the Page....
@@ -153,7 +153,7 @@ function get_page_properties() {
 			$requestpagenumber = $_REQUEST['pagenumber'];	
 			
 			$pagekey = $requestlocale.'|'.$requestarticle.'|'.$requestpagenumber;
-			$pages = $ofy->query($pageclass)->filter('id', $pagekey)->list();
+			$pages = ofy()->load()->type($pageclass)->filter('id', $pagekey)->list();
 			
 			foreach($pages as $page) {	
 				echo '<h2>Locale:  </h2><p><input readonly="readonly" name="pageLocale" value="'.$page->getLocale().'"></p>';

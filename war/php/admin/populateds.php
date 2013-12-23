@@ -41,7 +41,8 @@ ObjectifyService::register($articleclass);
 ObjectifyService::register($pageclass);
 	
 $obj_service = new Java('com.googlecode.objectify.ObjectifyService');
-$ofy = $obj_service->begin();
+
+
 
 $row = $_REQUEST['locale'];	
  	
@@ -94,7 +95,7 @@ $locale->setLOCALE_PREVIOUS_PAGE(LOCALE_META_TEXT['LOCALE_PREVIOUS_PAGE']);
 $locale->setLOCALE_NEXT_PAGE(LOCALE_META_TEXT['LOCALE_NEXT_PAGE']);
 $locale->setLOCALE_SELECT_LANGUAGE(LOCALE_META_TEXT['LOCALE_SELECT_LANGUAGE']);
 
-$ofy->put($locale);		
+ofy()->save()->entity($locale);		
 
 require('../../locale/'.LOCALES[$row]['configuration']);
  	
@@ -104,7 +105,7 @@ for ($articlerow = 0; $articlerow < 22; $articlerow++ ) {
 	
 	$article = new Article(LOCALES[$row]['code'].'|'.$ALL_CHAPTERS[$articlerow]['stub'], $ALL_CHAPTERS[$articlerow]['active'], LOCALES[$row]['code'], $ALL_CHAPTERS[$articlerow]['numberOfPages'], $ALL_CHAPTERS[$articlerow]['stub'], $ALL_CHAPTERS[$articlerow]['subtitle'], $ALL_CHAPTERS[$articlerow]['title'], (int)$ALL_CHAPTERS[$articlerow]['order'], ($ALL_CHAPTERS[$articlerow]['hidden']==null ? '' : $ALL_CHAPTERS[$articlerow]['hidden']));	
 	
-	$ofy->put($article);
+	ofy()->save()->entity($article);
 	
 	$pageindex = 1;
 	
@@ -127,7 +128,7 @@ for ($articlerow = 0; $articlerow < 22; $articlerow++ ) {
 		
 		$page = new Page(LOCALES[$row]['code'].'|'.$ALL_CHAPTERS[$articlerow]['stub'].'|'.$pageindex, $ALL_CHAPTERS[$articlerow]['stub'], LOCALES[$row]['code'], $pageindex, $ALL_CHAPTERS[$articlerow]['templates'][$pageindex-1], $contents);	
 		
-		$ofy->put($page);	
+		ofy()->save()->entity($page);	
 		
 		$pageindex++;
 	}	

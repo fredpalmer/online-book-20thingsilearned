@@ -1,0 +1,6 @@
+.settings/
+build/
+bin/
+appengine-generated/
+.classpath
+.project

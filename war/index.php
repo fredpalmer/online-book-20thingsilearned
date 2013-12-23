@@ -49,7 +49,6 @@ define( 'BROWSER_VERSION', $browser->getVersion() );
 /**
  * Route to basic or advanced
  */
- 
 function is_basic() {
 	if(	
 		( BROWSER_NAME == Browser::BROWSER_CHROME && BROWSER_VERSION >= 5 ) ||
@@ -99,7 +98,6 @@ function is_live() {
  * Assembles body class
  * 
  */
- 
 function body_class() {
     global $langcode;
 	$bodyClass = '';
@@ -128,20 +126,16 @@ $parsedPages = array();
 
 /**
  * Load the articles from the datastore
- * 
  */
- 
-function load_articles()
-{
-
-	global $pages, $activePages, $ofy, $localeclass, $articleclass, $pageclass, $langcode, $contents;
+function load_articles() {
 	
-	$locales = $ofy->query($localeclass)->filter('id',$langcode)->list();	
+	global $pages, $activePages, $localeclass, $articleclass, $pageclass, $langcode, $contents;
+	
+	$locales = ofy()->load()->type($localeclass)->filter('id',$langcode)->list();	
 	
 	foreach ( $locales as $locale ) {
 
-			$localeArticles = $ofy->query($articleclass)->filter('locale',$langcode)->order('order')->list();	//json_decode( $locale->getProperty('articles')->getValue() );
-			
+			$localeArticles = ofy()->load()->type($articleclass)->filter('locale',$langcode)->order('order')->list();	//json_decode( $locale->getProperty('articles')->getValue() );
 			foreach ($localeArticles as $article) {
 				$stub = $article->getStub();
 				$title = $article->getTitle();
@@ -151,7 +145,7 @@ function load_articles()
 				$hidden = $article->getHidden();
 				$order = $article->getOrder();
 				
-				$articlepages = $ofy->query($pageclass)->filter('locale',$langcode)->filter('stub', $stub)->list();
+				$articlepages = ofy()->load()->type($pageclass)->filter('locale',$langcode)->filter('stub', $stub)->list();
 				
 				$contents = array();
 				$templates = array();
@@ -194,11 +188,9 @@ load_articles();
 /**
  * 
  */
- 
-function parse_article_pages()
-{
-	global $pages, $parsedPages, $ofy, $pageclass, $articleclass, $langcode;
-	$querypages = $ofy->query($pageclass)->filter('locale',$langcode)->list();  //->filter('stub', $currentArticle);	
+function parse_article_pages() {
+	global $pages, $parsedPages, $pageclass, $articleclass, $langcode;
+	$querypages = ofy()->load()->type($pageclass)->filter('locale',$langcode)->list();  //->filter('stub', $currentArticle);	
 	
 	$i=1;
 	
@@ -206,7 +198,7 @@ function parse_article_pages()
 				
 		if($page->getPageNumber()=='1') {
 			$i = 1;
-			$pagearticleparent = $ofy->query($articleclass)->filter('locale', $langcode)->filter('stub', $page->getStub())->list()->get(0);
+			$pagearticleparent = ofy()->load()->type($articleclass)->filter('locale', $langcode)->filter('stub', $page->getStub())->first()->now();
 		}
 		
 		$pagetitle = $pagearticleparent->getTitle();			
@@ -241,11 +233,10 @@ function parse_article_pages()
 		$i++;	
 	}
 }
-//parse_article_pages();
+// parse_article_pages();
 
 /**
  * Set up page counters
- * 
  */
 $totalNumberOfPages = 1;
 foreach ($pages as $key => $value) {
@@ -257,7 +248,6 @@ foreach ($pages as $key => $value) {
 
 /**
  * Get page query params
- * 
  */
 $currentView = isset($_GET['view']) ? $_GET['view'] : null;
 $currentArticle = isset($_GET['article']) ? $_GET['article'] : null;
@@ -266,7 +256,6 @@ $currentArticlePage = isset($_GET['page']) ? $_GET['page'] : '1';
 
 /**
  * Return stub of next/previous article
- * 
  */
 function nextPrevArticleName($order) {
 	global $activePages, $currentArticle;  //
@@ -281,7 +270,6 @@ function nextPrevArticleName($order) {
 
 /**
  * Return url of next page
- * 
  */
 function nextPage() {
 	global $activePages, $currentView, $currentArticle, $currentArticlePage;
@@ -311,7 +299,6 @@ function nextPage() {
 
 /**
  * Return url of next page
- * 
  */
 function prevPage() {
 	global $activePages, $currentView, $currentArticle, $currentArticlePage;
@@ -340,7 +327,6 @@ function prevPage() {
 
 /**
  * 404 Handling
- * 
  */
 if( isset($_GET['article']) && !$activePages[$_GET['article']] ) {
 	header('Location: /');
@@ -351,7 +337,6 @@ if( $currentView == '404' ) {
 
 /**
  * Checks if it's a 'stub'
- * 
  */
 function isStub() {
 	return isset($_GET['mode']) && ($_GET['mode'] == 'stub' || $_GET['mode'] == 'all');
@@ -359,7 +344,6 @@ function isStub() {
 
 /**
  * Checks if it's a print page
- * 
  */
 function isPrintPage() {
 	return isset($_GET['mode']) && ($_GET['mode'] == 'print' || $_GET['mode'] == 'printAll') ;
@@ -367,7 +351,6 @@ function isPrintPage() {
 
 /**
  * Include header file
- * 
  */
 if(isPrintPage()) {
 	require_once('php/includes/header_print.php');
@@ -376,10 +359,9 @@ if(isPrintPage()) {
 } 
 
 /**
- * Spit our the right type of content depending on what
+ * Spit out the right type of content depending on what
  * parameters were set in the request.
  */
-
 // Are we printing a specific page of an article?
 if(isset($_GET['article']) && !isset($_GET['page']) && isPrintPage()) {
 	foreach($pages as $name => $value) {
@@ -476,7 +458,6 @@ foreach($pages as $name => $value) {
 
 /**
  * Include footer file
- * 
  */
 if(isPrintPage()) {	
 	require_once('php/includes/footer_print.php');

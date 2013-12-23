@@ -42,7 +42,7 @@ function new_page_link() {
  */
 
 function get_pages() {
-	global $ofy, $pageclass;
+	global $pageclass;
 	
 	if($_REQUEST['new']=='1') {
 		return;
@@ -54,7 +54,7 @@ function get_pages() {
 		$localekey = $_REQUEST['locale'];
 	}	
 	
-	$pages = $ofy->query($pageclass)->filter('locale', $localekey)->filter('stub', $pagekey)->list();
+	$pages = ofy()->load()->type($pageclass)->filter('locale', $localekey)->filter('stub', $pagekey)->list();
 	
 	echo '<ol>';	
 	
@@ -68,8 +68,6 @@ function get_pages() {
 
 function save_new_article() {
 	
-	global $ofy;
-	
 	if($_POST['articleStub']=='theend' || $_POST['articleStub']=='foreword') {
 		$hidden = '1';
 	} else {
@@ -81,7 +79,7 @@ function save_new_article() {
 
 function get_article_from_query_string() {
 	
-	global $ofy, $articleclass;	
+	global $articleclass;	
 	
 	if($_REQUEST['new']=='1' && !isset($_POST['save'])) {
 		$htmlresult = '<input name="articleinput"></p>';  // type="text"
@@ -98,7 +96,7 @@ function get_article_from_query_string() {
 		//getting the article from the datastore and storing the new UI entered values and saving back to the datastore
 		
 		$articlekey = $_POST['articleLocale'].'|'.$_POST['articleStub'];
-		$article = $ofy->get($articleclass, $articlekey);
+		$article = ofy()->load()->type($articleclass)->id($articlekey)->now();
 		$article->setLocale($_POST['articleLocale']);		
 		$article->setActive($_POST['articleActive']);
 		//$article->setHidden($_POST['articleHidden']);	
@@ -124,7 +122,7 @@ function get_article_from_query_string() {
 
 function get_article_properties() {	
 
-	global $ofy, $articleclass;
+	global $articleclass;
 	
 	if($_REQUEST['new']=='1' && !isset($_POST['save'])) {
 		echo '<h2>Locale:  </h2><p><input name="articleLocale" value="'.$_REQUEST['locale'].'"></p>';
@@ -139,7 +137,7 @@ function get_article_properties() {
 		
 		if(isset($_POST['save'])) {
 			$articlekey = $_POST['articleLocale'].'|'.$_POST['articleStub'];
-			$article = $ofy->get($articleclass, $articlekey);
+			$article = ofy()->load()->type($articleclass)->id($articlekey)->now();
 			$article->setLocale($_POST['articleLocale']);		
 			$article->setActive($_POST['articleActive']);
 			$article->setOrder($_POST['articleOrder']);			
@@ -164,7 +162,7 @@ function get_article_properties() {
 	
 		$requestlocale = $_REQUEST['locale'];	
 		$requestarticle = $_REQUEST['article'];	
-		$article = $ofy->query($articleclass)->filter('locale', $requestlocale)->filter('stub',$requestarticle)->get();
+		$article = ofy()->load()->type($articleclass)->filter('locale', $requestlocale)->filter('stub',$requestarticle)->first()->now();
 	
 		echo '<h2>Locale:  </h2><p><input readonly="readonly" name="articleLocale" value="'.$article->getLocale().'"></p>';
 		echo '<h2>Active:  </h2><p><input readonly="readonly" name="articleActive" value="'.$article->getActive().'"></p>';

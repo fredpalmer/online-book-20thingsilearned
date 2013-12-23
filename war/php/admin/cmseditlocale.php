@@ -30,7 +30,7 @@ require_once('../includes/objectify.php');
  */
 
 function get_articles() {
-	global $ofy, $articleclass;
+	global $articleclass;
 
 	if(isset($_POST['save'])) {
 		$localekey = $_POST['localeinput'];
@@ -38,7 +38,7 @@ function get_articles() {
 		$localekey = $_REQUEST['locale'];	
 	}	
 	
-	$articles = $ofy->query($articleclass)->filter('locale',$localekey)->list();
+	$articles = ofy()->load()->type($articleclass)->filter('locale',$localekey)->list();
 	
 	if($articles->size()>0) {
 	
@@ -80,7 +80,7 @@ function get_locale_from_query_string() {
  */
  
 function get_locale_meta_data() {
-	global $ofy, $localeclass;
+	global $localeclass;
 	
 	if(isset($_POST['save'])) {
 		$locale = new Locale();
@@ -150,7 +150,7 @@ function get_locale_meta_data() {
 	} 
 
 	$requestlocale = $_REQUEST['locale'];	
-	$locales = $ofy->query($localeclass)->filter('id',$requestlocale)->list();	
+	$locales = ofy()->load()->type($localeclass)->filter('id',$requestlocale)->list();	
 	
 	foreach($locales as $locale) {	
 		echo '<h2>Locale Meta Description:  </h2><p><textarea name="LOCALE_META_DESCRIPTION">'.$locale->getLOCALE_META_DESCRIPTION().'</textarea></p>';

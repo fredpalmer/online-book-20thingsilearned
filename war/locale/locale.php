@@ -32,7 +32,6 @@
 	/**
 	* defining an array of Locale arrays containing values for each Locale name, Locale code, and the paths to the files containing further Locale info.
 	*/
-	
 	define( 'LOCALES', array(	
 		array(
 			'name' => 'English',
@@ -41,13 +40,17 @@
 			'strings' => 'en-US/strings.php',
 			'configuration' => 'en-US/configuration.php'
 		)
-		
-		
 	) );
 	
+  if (!isset ($langcode)) {
+  	// Get locale at position defined in request param
+	$locale = constant('LOCALES')[$_REQUEST['locale']];
+  } else {
+    // Default to the first language in the list
+	$locale = getLocaleByLanguageCode( $langcode );
+  }
 	
-  // Default to the first language in the list
-  $locale = getLocaleByLanguageCode( $langcode );
+
   
   // GLobal locale values
   define( 'LOCALE_NAME', $locale['name'] );
@@ -70,5 +73,4 @@
 		
 		return NULL;
 	}
-	
 ?>

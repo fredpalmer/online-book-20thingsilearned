@@ -7,7 +7,7 @@ import com.fi.twentythings.Version;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 
-global $ofy, $obj_service, $localeclass, $articleclass, $pageclass, $versionclass, $loc, $langcode;
+global $obj_service, $localeclass, $articleclass, $pageclass, $versionclass, $loc, $langcode;
 
 $localeclass = java_class('com.fi.twentythings.Locale');
 $articleclass = java_class('com.fi.twentythings.Article');
@@ -21,65 +21,72 @@ ObjectifyService::register($versionclass);
 
 $obj_service = new Java('com.googlecode.objectify.ObjectifyService');
 
-$ofy = $obj_service->begin();
+// $ofy = $obj_service->ofy();
 
 if (!isset ($_GET['locale']))
 	$langcode = manageLanguage();
 
 /**
+ * Returns the Objectify instance
+ */
+function ofy() {
+	global $obj_service;
+	
+	return $obj_service->ofy();
+}
+
+/**
  * Deletes the passed in 'entity' from the datastore and increments the datastore Version number
 */
-
 function delete_entity_increment_version($key, $class) {
 
-	global $ofy, $versionclass, $articleclass;
+	global $versionclass, $articleclass;
 	$version;
 
-	if ($ofy->query($versionclass)->filter('id', '1')-> list ()->size() == 0) {
+	if (ofy()->load()->type($versionclass)->id('1')->now() == null) {
 		$version = new Version('1', '0');
 	} else {
-		$version = $ofy->query($versionclass)->filter('id', '1')->get();
+		$version = ofy()->load->type($versionclass)->id('1')->now();
 	}
 
-	$ofy->delete($class, $key);	
+	ofy()->delete()->type($class)->id($key);	
 
 	if($class == 'class com.fi.twentythings.Page') {
 		$articlekey = substr($key, 0, strrpos($key, "|"));
-		$article = $ofy->query($articleclass)->filter('id', $articlekey)->get();
+		$article = ofy()->load()->type($articleclass)->id($articlekey)->now();
 		$article->setNumberOfPages($article->getNumberOfPages() - 1);
-		$ofy->put($article);
+		ofy()->save()->entity($article)->now();
 	}
 	
 	$version->setVersion($version->getVersion() + 1);
-	$ofy->put($version);
+	ofy()->save()->entity($version)->now();
 }
 
 /**
  * Deletes the passed in 'entity' from the datastore and increments the datastore Version number
  */
-
 function save_entity_increment_version($entity) {
 
-	global $ofy, $versionclass, $articleclass;
+	global $versionclass, $articleclass;
 	$version;
 
-	if ($ofy->query($versionclass)->filter('id', '1')-> list ()->size() == 0) {
+	if (ofy()->load()->type($versionclass)->id('1')->now() == null) {
 		$version = new Version('1', '0');
 	} else {
-		$version = $ofy->query($versionclass)->filter('id', '1')->get();
+		$version = ofy()->load()->type($versionclass)->id('1')->now();
 	}
 
-	$ofy->put($entity);
+	ofy()->save()->entity($entity)->now();
 	
 	if($entity->getClass() == 'class com.fi.twentythings.Page') {
 		$articlekey = substr($entity->getId(), 0, strrpos($entity->getId(), "|"));
-		$article = $ofy->query($articleclass)->filter('id', $articlekey)->get();
+		$article = ofy()->load()->type($articleclass)->id($articlekey)->now();
 		$article->setNumberOfPages($article->getNumberOfPages() + 1);
-		$ofy->put($article);
+		ofy()->save()->entity($article)->now();
 	}
 	
 	$version->setVersion($version->getVersion() + 1);
-	$ofy->put($version);
+	ofy()->save()->entity($version)->now();
 }
 
 /**
@@ -87,21 +94,21 @@ function save_entity_increment_version($entity) {
  */
 
 function get_version_number() {
-	global $ofy, $versionclass;
-	$version = $ofy->query($versionclass)->filter('id', '1')->get();
+	global $versionclass;
+	$version = ofy()->load()->type($versionclass)->id('1')->now();
 	if ($version == null) {
 		$version = new Version('1', '0');
-		$ofy->put($version);
+		ofy()->save()->entity($version)->now();
 	}
 	return $version->getVersion();
 }
 
 function get_version_no_echo() {
-	global $ofy, $versionclass;
-	$version = $ofy->query($versionclass)->filter('id', '1')->get();
+	global $versionclass;
+	$version = ofy()->load->type($versionclass)->id('1')->now();
 	if ($version == null) {
 		$version = new Version('1', '0');
-		$ofy->put($version);
+		ofy()->save()->entity($version)->now();
 	}
 	return $version->getVersion();
 }
@@ -109,9 +116,8 @@ function get_version_no_echo() {
 /**
  * determines the current locale based on cookie, query string or default values 
  */
-
 function manageLanguage() {
-	global $ofy, $loc, $localeclass, $langcode;
+	global $loc, $localeclass;
 
 	// Valid language codes.
 	$langPattern = '/^(en-US|en-GB|fr-FR|pt-BR|zh-CN|in-ID|pl-PL|cs-CZ|de-DE|es-419|es-ES|fil-PH|it-IT|ru-RU|ja-JP|zh-TW|nl-NL)$/i';
@@ -119,19 +125,19 @@ function manageLanguage() {
 	if (isset ($_GET['language']) && preg_match($langPattern, $_GET['language'])) {
 		// If requesting a language in URL, set cookie and continue to output that language.
 		setcookie('language', $_GET['language'], pow(2, 31) - 1, '/');
-		$loc = $ofy->query($localeclass)->filter('id', $_GET['language'])->get();
+		$loc = ofy()->load()->type($localeclass)->id($_GET['language'])->now();
 		$lang = $_GET['language'];
 	} else {
 		// No language requested in URL.
 		if (isset ($_COOKIE['language'])) {
 			// If cookie is set, redirect to that language.
 			header('Location: http://'.$_SERVER['HTTP_HOST'].'/'.$_COOKIE['language'].$_SERVER['SCRIPT_URL']);
-			$loc = $ofy->query($localeclass)->filter('id', $_COOKIE['language'])->get();
+			$loc = ofy()->load()->type($localeclass)->id($_COOKIE['language'])->now();
 			$lang = $_COOKIE['language'];
 		} else {
 			// If no cookie is set, detect language, and redirect to resulting language.
 			header('Location: http://'.$_SERVER['HTTP_HOST'].'/'.getBrowserLanguage().$_SERVER['SCRIPT_URL']);
-			$loc = $ofy->query($localeclass)->filter('id', getBrowserLanguage())->get();
+			$loc = ofy()->load()->type($localeclass)->id(getBrowserLanguage())->now();
 			$lang = getBrowserLanguage();
 		}
 	}
@@ -141,10 +147,9 @@ function manageLanguage() {
 /**
  * gets an array of the supported locales 
  */
-
 function get_locales() {
-	global $ofy, $localeclass;
-	$locales = $ofy->query($localeclass)-> list ();
+	global $localeclass;
+	$locales = ofy()->load()->type($localeclass)->list();
 	$returnlocales = '';
 	$index = 1;
 	foreach ($locales as $locale) {
@@ -157,8 +162,8 @@ function get_locales() {
 }
 
 function get_display_locales() {
-	global $ofy, $localeclass;
-	$locales = $ofy->query($localeclass)-> list ();
+	global $localeclass;
+	$locales = ofy()->load()->type($localeclass)->list();
 	$returnlocales = '';
 	$index = 1;
 	foreach ($locales as $locale) {

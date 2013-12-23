@@ -46,18 +46,26 @@ ObjectifyService::register($pageclass);
 	
 $obj_service = new Java('com.googlecode.objectify.ObjectifyService');		
 			
-$ofy = $obj_service->begin();
 
-$locales = $ofy->query($localeclass)->list();
+/**
+ * Returns the Objectify instance
+ */
+function ofy() {
+	global $obj_service;
+
+	return $obj_service->ofy();
+}
+
+$locales = ofy()->load()->type($localeclass)->list();
 
 foreach ($locales as $locale) {
-	$articles = $ofy->query($articleclass)->filter('locale', $locale->getId())->list();
+	$articles = ofy()->load()->type($articleclass)->filter('locale', $locale->getId())->list();
 	foreach ($articles as $article) {
 		echo 'locale is '.$locale;		
-		$pagecount = $ofy->query($pageclass)->filter('locale', $locale->getId())->filter('stub', $article->getStub())->count();
+		$pagecount = ofy()->load()->type($pageclass)->filter('locale', $locale->getId())->filter('stub', $article->getStub())->count();
 		echo 'pagecount is '.$pagecount;
 		$article->setNumberOfPages($pagecount);
-		$ofy->put($article);	
+		ofy()->save()->entity($article);	
 	}
 	
 }
