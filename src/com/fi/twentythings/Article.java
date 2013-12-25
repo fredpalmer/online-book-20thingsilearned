@@ -5,38 +5,30 @@ import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Index;
 
-
 /**
- * Copyright 2011 Google Inc. This program is free software; you can
- * redistribute it and/or modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
+ * The Article contains the data for each topic covered in the 20 things
+ * application. An article contains one or more Pages. Article information can
+ * me modified via the CMS (see: cmseditarticle.php)
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
- * @author jonathan.gray The Article contains the data for each topic covered in
- *         the 20 things application. An article contains one or more Pages.
- *         Article information can me modified via the CMS (see:
- *         cmseditarticle.php)
+ * @author jonathan.gray
  */
 @Entity
 public class Article {
-	@Id	String id;
-	@Index String active;
-	@Index String locale;
+	@Id
+	String id;
+	@Index
+	String active;
+	@Index
+	String locale;
 	String numberOfPages;
-	@Index String stub;
+	@Index
+	String stub;
 	String subtitle;
 	String title;
-	@Index int order;
-	@Index String hidden;
+	@Index
+	int order;
+	@Index
+	String hidden;
 
 	@Ignore
 	String doNotPersist;
