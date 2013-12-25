@@ -30,7 +30,6 @@
 	 * 					be accessed (for a rolling release schedule).
 	 * order:			Determines the order in which chapters appear.
 	 */
-	 
 	$ALL_CHAPTERS = array(
 		array(
 			'stub' => 'foreword',

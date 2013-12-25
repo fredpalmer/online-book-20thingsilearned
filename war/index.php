@@ -18,7 +18,6 @@ require_once('locale/' . LOCALE_CONFIGURATION);
 /**
  * Java imports
  */
- 
 import com.fi.twentythings.Article;
 import com.fi.twentythings.Locale;
 import com.fi.twentythings.Page;
@@ -79,7 +78,6 @@ function is_live() {
 
 /**
  * Assembles body class
- * 
  */
 function body_class() {
     global $langcode;

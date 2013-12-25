@@ -7,7 +7,7 @@ import com.fi.twentythings.Locale;
 require_once('../includes/auth.php');
 
 /**
- * get the locales fromn the datastore and add them to a select
+ * get the locales from the datastore and add them to a select
  */
 function locale_codes_dropdown() {
 
@@ -22,7 +22,6 @@ function locale_codes_dropdown() {
 	foreach( $locales as $locale ) {
         echo '<p><a href="/cmseditlocale?locale='.$locale->getId().'">'.$locale->getId().'</a></p>'."\n";                
     }
-    
 }
 
 ?>

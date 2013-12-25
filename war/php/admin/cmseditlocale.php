@@ -11,7 +11,6 @@ require_once('../includes/objectify.php');
 /**
  * this method retrieves all Articles for the specified Locale
  */
-
 function get_articles() {
 	global $articleclass;
 
