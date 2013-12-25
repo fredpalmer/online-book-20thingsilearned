@@ -6,6 +6,11 @@ The [original source](https://code.google.com/p/20thingsilearned/) was published
 on Google code.
 
 
+## CHANGES ##
+Compared to the original version, the following **changes** have been made: 
+* Update Appengine and Objectify libraries.
+
+
 ## TECHNOLOGY OVERVIEW ##
 
 Back-end -- the application runs on Google App Engine (GAE) and stores article
@@ -34,13 +39,13 @@ documentation: http://code.google.com/appengine/docs/java/tools/devserver.html
 
 2. Populate the datatore.
 
-Once the app is running, you'll want to first run an a sript to populate the
-datastore with article data.  Since 20 Things is now localized, all the content
+Once the app is running, you'll want to first run an a script to populate the
+datastore with article data. Since 20 Things is now localized, all the content
 and configuration files are organized by language.  This version of the code
 includes the necessary files for populating the US English content.
 
 To import the US English data, load the following URL in your browser:
-http://localhost:8080/populateds?locale=0 (replace the port with the one being
+http://localhost:8888/populateds?locale=0 (replace the port with the one being
 used by your local development server).  When prompted for a username and
 password, enter 'testUsername' and 'testPassword' (these can be changed in the
 source code).
@@ -48,14 +53,14 @@ source code).
 3. View the app.
 
 Now that you have imported the US English content, you should be able to view
-the app on the root of your server (ie. http://localhost:8080).  The app
+the app on the root of your server, ie. http://localhost:8888 .  The app
 should redirect you to the /en-US path and display the 20 Things book with US
 English content.
 
 4. Edit the content.
 
 The main article content can be edited via a lightweight CMS accessible from the
-/cmshome path on your app.  You can add, edit or delete pages and articles from
+http://localhost:8888/cmshome path on your app.  You can add, edit or delete pages and articles from
 the locale (en-US) you have imported.
 
 5. Deploy the app.
